@@ -73,6 +73,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         mReviewContent = new ReviewContent();
         mReviewRecyclerViewAdapter = new ReviewRecyclerViewAdapter(mReviewContent.ITEMS);
         mReviewRecyclerView.setAdapter(mReviewRecyclerViewAdapter);
+        mReviewRecyclerView.setNestedScrollingEnabled(false);
 
         getDetails();
     }
