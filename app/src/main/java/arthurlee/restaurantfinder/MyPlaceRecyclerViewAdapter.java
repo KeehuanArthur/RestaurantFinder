@@ -71,7 +71,7 @@ public class MyPlaceRecyclerViewAdapter extends RecyclerView.Adapter<MyPlaceRecy
             @Override
             public void onClick(View v) {
                 if (null != mListener) {
-                    mListener.openDetailsActivity(place.title, place.address, place.rating, place.id);
+                    mListener.openDetailsActivity(place.id);
                 }
             }
         });

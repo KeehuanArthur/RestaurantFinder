@@ -308,11 +308,8 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
         API.call(API.LIST, headers, null, test_listener, test_error_listener, Request.Method.GET);
     }
 
-    public void openDetailsActivity(String title, String location, float rating, String placeId){
+    public void openDetailsActivity(String placeId){
         Intent intent = new Intent(this, RestaurantDetailsActivity.class);
-        intent.putExtra("title", title);
-        intent.putExtra("address", location);
-        intent.putExtra("rating", rating);
         intent.putExtra("placeId", placeId);
         startActivity(intent);
     }

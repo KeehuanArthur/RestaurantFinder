@@ -19,6 +19,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.VisibleRegion;
 
 import org.w3c.dom.Text;
@@ -117,6 +118,16 @@ public class MapFinderFragment extends Fragment implements OnMapReadyCallback {
                 LatLng center = mGoogleMap.getCameraPosition().target;
                 Log.d("MAPFINDER", "-------- radius: " + String.format("%.4f", radius) );
                 mListener.try_api(center.latitude, center.longitude, radius);
+            }
+        });
+
+        mGoogleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                String placeId = ((MainActivity) mListener).markerMap.get(marker.getPosition());
+                if ( placeId != null ) {
+                    mListener.openDetailsActivity(placeId);
+                }
             }
         });
 
