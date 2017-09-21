@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
 
                                 try_api(location.getLatitude(), location.getLongitude(), 500.0);
                                 if (map_fragment.mGoogleMap != null) {
-                                    map_fragment.mGoogleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(API.curLatitude, API.curLongitude) , 17) );
+                                    map_fragment.mGoogleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(API.curLatitude, API.curLongitude) , 15) );
                                 }
                             }
                         }
