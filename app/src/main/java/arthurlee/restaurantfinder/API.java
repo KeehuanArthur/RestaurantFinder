@@ -58,6 +58,10 @@ public class API {
     static String jFormattedPhoneNumber = "formatted_phone_number";
     static String jPhotos = "photos";
     static String jResult = "result";
+    static String jReviews = "reviews";
+    static String jAuthor = "author_name";
+    static String jRelativeTime = "relative_time_description";
+    static String jText = "text";
 
     /* Call types */
     static String LIST = "nearbysearch";

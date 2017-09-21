@@ -5,6 +5,7 @@ import android.media.Rating;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -39,7 +40,10 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     private TextView mTitleView, mAddressView, mContactView;
     private RatingBar mRatingBar;
     private ViewPager mImagePager;
+    private RecyclerView mReviewRecyclerView;
     private SlidingImageAdapter mSlidingImageAdapter;
+    private ReviewRecyclerViewAdapter mReviewRecyclerViewAdapter;
+    private ReviewContent mReviewContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,11 +65,21 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         mContactView = (TextView) findViewById(R.id.detail_contact);
         mRatingBar = (RatingBar) findViewById(R.id.detail_rating);
         mImagePager = (ViewPager) findViewById(R.id.detail_image_pager);
+        mReviewRecyclerView = (RecyclerView) findViewById(R.id.detail_review_recycler_view);
 
         mSlidingImageAdapter = new SlidingImageAdapter(mImagePager.getContext(), null);
         mImagePager.setAdapter(mSlidingImageAdapter);
 
+        mReviewContent = new ReviewContent();
+        mReviewRecyclerViewAdapter = new ReviewRecyclerViewAdapter(mReviewContent.ITEMS);
+        mReviewRecyclerView.setAdapter(mReviewRecyclerViewAdapter);
+
         getDetails();
+    }
+
+    public void onBackPressed() {
+        super.onBackPressed();
+
     }
 
 
@@ -83,19 +97,53 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                     mAddress = response.getString(API.jFormattedAddress);
                     mContact = response.getString(API.jFormattedPhoneNumber);
                     mTitle = response.getString(API.jTitle);
-                    mRating = Float.parseFloat(response.getString(API.jRating));
 
-                    JSONArray jsonPhotoList = response.getJSONArray(API.jPhotos);
-                    for (int i = 0; i < jsonPhotoList.length(); i++){
-                        imageReferences.add(jsonPhotoList.getJSONObject(i).getString(API.jPhotoReference));
-                        mSlidingImageAdapter.addItem( jsonPhotoList.getJSONObject(i).getString(API.jPhotoReference) );
-                        mSlidingImageAdapter.notifyDataSetChanged();
+                    if (response.has(API.jRating)) {
+                        mRating = Float.parseFloat(response.getString(API.jRating));
+                    } else {
+                        mRating = 0.0f;
                     }
+
+                    if (response.has(API.jPhotos)) {
+                        JSONArray jsonPhotoList = response.getJSONArray(API.jPhotos);
+                        for (int i = 0; i < jsonPhotoList.length(); i++){
+                            imageReferences.add(jsonPhotoList.getJSONObject(i).getString(API.jPhotoReference));
+                            mSlidingImageAdapter.addItem( jsonPhotoList.getJSONObject(i).getString(API.jPhotoReference) );
+                            mSlidingImageAdapter.notifyDataSetChanged();
+                        }
+                    } else {
+                        // TODO: add no photo image
+                        mImagePager.setBackground(getDrawable(R.drawable.ic_photo_black_24dp));
+                    }
+
 
                     mTitleView.setText(mTitle);
                     mAddressView.setText(mAddress);
                     mContactView.setText(mContact);
                     mRatingBar.setRating(mRating);
+
+                    mReviewContent.clear();
+                    JSONArray jsonReviewArray = response.getJSONArray(API.jReviews);
+
+                    for (int i = 0; i < jsonReviewArray.length(); i++) {
+                        JSONObject jsonReview = jsonReviewArray.getJSONObject(i);
+                        final ReviewContent.ReviewItem reviewItem = new ReviewContent.ReviewItem();
+
+                        reviewItem.author = jsonReview.getString(API.jAuthor);
+                        reviewItem.rating = Float.parseFloat(jsonReview.getString(API.jRating));
+                        reviewItem.relativeTime = jsonReview.getString(API.jRelativeTime);
+                        reviewItem.text = jsonReview.getString(API.jText);
+
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Log.d("RestaurantDetails", "----- size: " + mReviewContent.size() + " added review by" + reviewItem.toString());
+                                mReviewContent.addItem(reviewItem);
+                                mReviewRecyclerView.getAdapter().notifyItemInserted(mReviewContent.ITEMS.size()-1);
+                            }
+                        });
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();

@@ -17,17 +17,9 @@ import java.util.Map;
  */
 public class PlaceContent {
 
-    /**
-     * An array of sample (dummy) items.
-     */
     public static final List<PlaceItem> ITEMS = new ArrayList<PlaceItem>();
 
-    /**
-     * A map of sample (dummy) items, by ID.
-     */
     public static final Map<String, PlaceItem> ITEM_MAP = new HashMap<String, PlaceItem>();
-
-    private static final int COUNT = 25;
 
     public static void addItem(PlaceItem item) {
         ITEMS.add(item);
