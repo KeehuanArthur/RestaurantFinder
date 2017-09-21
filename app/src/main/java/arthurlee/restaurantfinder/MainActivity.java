@@ -58,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
     private static String TAG = "Main Activity";
     private static String nextPageToken;
 
+    private final int PERMISSION_LOCATION = 99;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,7 +145,54 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
 
 
         /* -------------------- Get location permission ------------------------ */
-        // TODO: clean this up. when location permission is given, you should do something
+        if ( !getLocationAndCallAPI() ){
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                new AlertDialog.Builder(this)
+                        .setTitle("Location Permission")
+                        .setMessage("Need Location Permission")
+                        .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                ActivityCompat.requestPermissions(MainActivity.this,
+                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                        PERMISSION_LOCATION);
+                            }
+                        })
+                        .create()
+                        .show();
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission. ACCESS_FINE_LOCATION},
+                        PERMISSION_LOCATION);
+            }
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    getLocationAndCallAPI();
+                }
+                return;
+            }
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        API.setRequestQueue(Volley.newRequestQueue(this));
+        API.initImageLoader();
+    }
+
+    public boolean getLocationAndCallAPI() {
         int permission_check = ContextCompat.checkSelfPermission( this, Manifest.permission.ACCESS_FINE_LOCATION );
         if (permission_check == PackageManager.PERMISSION_GRANTED) {
             fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -156,43 +205,17 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
                                 API.curLatitude = location.getLatitude();
                                 API.curLongitude = location.getLongitude();
 
-                                // TODO: WARNING FIX THIS!!!
-                                try_api(null, null, null);
-                                if (((MapFinderFragment)map_fragment).mGoogleMap != null) {
-                                    ((MapFinderFragment)map_fragment).mGoogleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(API.curLatitude, API.curLongitude) , 17) );
+                                try_api(location.getLatitude(), location.getLongitude(), 500.0);
+                                if (map_fragment.mGoogleMap != null) {
+                                    map_fragment.mGoogleMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(API.curLatitude, API.curLongitude) , 17) );
                                 }
                             }
                         }
                     });
+            return true;
         } else {
-            Toast.makeText( this, "No Location Permission", Toast.LENGTH_LONG).show();
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                new AlertDialog.Builder(this)
-                        .setTitle("Location Permission")
-                        .setMessage("Need Location Permission")
-                        .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                ActivityCompat.requestPermissions(MainActivity.this,
-                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                        99);
-                            }
-                        })
-                        .create()
-                        .show();
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission. ACCESS_FINE_LOCATION},
-                        99);
-            }
+            return false;
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        API.setRequestQueue(Volley.newRequestQueue(this));
-        API.initImageLoader();
     }
 
     public void try_api(Double latitude, Double longitude, Double radius) {
