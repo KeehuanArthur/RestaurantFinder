@@ -2,6 +2,7 @@ package arthurlee.restaurantfinder;
 
 import android.Manifest;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -208,6 +209,8 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
                     for (int i = 0; i < jsonPlaceArray.length(); i++ ){
                         JSONObject jsonPlace = jsonPlaceArray.getJSONObject(i);
                         final PlaceContent.PlaceItem placeItem = new PlaceContent.PlaceItem();
+
+                        placeItem.id = jsonPlace.getString(API.jPlaceId);
                         placeItem.title = jsonPlace.getString(API.jTitle);
 
                         JSONObject jsonLocation = jsonPlace.getJSONObject(API.jGeometry).getJSONObject(API.jLocation);
@@ -262,6 +265,15 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
         headers.put("radius", String.format(Locale.US, "%4f", radius));
         headers.put("type", "restaurant");
         API.call(headers, null, test_listener, test_error_listener, Request.Method.GET);
+    }
+
+    public void openDetailsActivity(String title, String location, float rating, String placeId){
+        Intent intent = new Intent(this, RestaurantDetailsActivity.class);
+        intent.putExtra("title", title);
+        intent.putExtra("address", location);
+        intent.putExtra("rating", rating);
+        intent.putExtra("placeId", placeId);
+        startActivity(intent);
     }
 
     @Override

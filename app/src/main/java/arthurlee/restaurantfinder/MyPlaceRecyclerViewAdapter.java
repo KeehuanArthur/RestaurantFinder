@@ -2,6 +2,7 @@ package arthurlee.restaurantfinder;
 
 import android.graphics.Bitmap;
 import android.support.v4.util.LruCache;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,7 +43,7 @@ public class MyPlaceRecyclerViewAdapter extends RecyclerView.Adapter<MyPlaceRecy
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        PlaceItem place = mValues.get(position);
+        final PlaceItem place = mValues.get(position);
         holder.mItem = place;
         holder.mCardTitleView.setText(place.title);
         holder.mCardLocationView.setText(place.address);
@@ -66,13 +67,11 @@ public class MyPlaceRecyclerViewAdapter extends RecyclerView.Adapter<MyPlaceRecy
             });
         }
 
-        holder.mView.setOnClickListener(new View.OnClickListener() {
+        holder.mCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-//                    mListener.onListFragmentInteraction(holder.mItem);
+                    mListener.openDetailsActivity(place.title, place.address, place.rating, place.id);
                 }
             }
         });
@@ -89,11 +88,13 @@ public class MyPlaceRecyclerViewAdapter extends RecyclerView.Adapter<MyPlaceRecy
         public final TextView mCardLocationView;
         public final ImageView mCardImageView;
         public final RatingBar mCardRatingView;
+        public final CardView mCardView;
         public PlaceItem mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
+            mCardView = (CardView) view.findViewById(R.id.card_view);
             mCardImageView = (ImageView) view.findViewById(R.id.card_image_view);
             mCardTitleView = (TextView) view.findViewById(R.id.card_title);
             mCardLocationView = (TextView) view.findViewById(R.id.card_location);

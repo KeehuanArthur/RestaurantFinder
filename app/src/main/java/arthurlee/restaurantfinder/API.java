@@ -24,8 +24,10 @@ public class API {
 
     static String cdn = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
     static String image_url = "https://maps.googleapis.com/maps/api/place/photo";
-//    static String places_key = "AIzaSyB-bpw0ollWA5AKpT11Y2CL2qPFs4kC_dk"; // <-- this is the key given
-    static String places_key = "AIzaSyBePo4Yny6pul04GT3EQ2LcdrQYTAZWsi4";
+//    static String places_key = "AIzaSyB-bpw0ollWA5AKpT11Y2CL2qPFs4kC_dk";
+    // Note: the key above is the key that was given in the email. It ran out of uses. Maybe when the
+    //       key was generated, the account wasn't verified so only 1000 uses were allowed instead of 150,000
+    static String places_key = "AIzaSyDS7TIRB3odqBM9ny6mB9ULISHzP9_IFyU";
 
 
     static Double curLatitude;

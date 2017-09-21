@@ -23,11 +23,13 @@
             </intent-filter>
         </activity>
 
-        <meta-data android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyBt08WxEypilTzyi2fQBm9OBIgzSt3uk2g"/>
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyBt08WxEypilTzyi2fQBm9OBIgzSt3uk2g" />
 
-        <!--<meta-data android:name="com.google.android.geo.API_KEY"-->
-            <!--android:value="AIzaSyB-bpw0ollWA5AKpT11Y2CL2qPFs4kC_dk"/>-->
+        <!-- <meta-data android:name="com.google.android.geo.API_KEY" -->
+        <!-- android:value="AIzaSyB-bpw0ollWA5AKpT11Y2CL2qPFs4kC_dk"/> -->
+        <activity android:name=".RestaurantDetailsActivity"></activity>
     </application>
 
 </manifest>

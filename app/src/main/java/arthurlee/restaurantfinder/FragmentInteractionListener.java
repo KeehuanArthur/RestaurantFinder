@@ -6,5 +6,5 @@ package arthurlee.restaurantfinder;
 
 public interface FragmentInteractionListener {
     void try_api(Double latitude, Double longitude, Double radius);
-
+    void openDetailsActivity(String title, String location, float rating, String placeId);
 }
