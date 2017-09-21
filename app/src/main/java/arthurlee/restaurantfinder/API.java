@@ -22,7 +22,8 @@ import java.util.Map;
 
 public class API {
 
-    static String cdn = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
+//    static String cdn = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
+    static String cdn = "https://maps.googleapis.com/maps/api/place/";
     static String image_url = "https://maps.googleapis.com/maps/api/place/photo";
 //    static String places_key = "AIzaSyB-bpw0ollWA5AKpT11Y2CL2qPFs4kC_dk";
     // Note: the key above is the key that was given in the email. It ran out of uses. Maybe when the
@@ -37,6 +38,7 @@ public class API {
     static ImageLoader imageLoader;
     private static ImageLoader.ImageCache imageCache;
 
+    /* JSON tags for Array of places */
     static String jNextPageToken = "next_page_token";
     static String jResults = "results";
     static String jTitle = "name";
@@ -50,6 +52,16 @@ public class API {
     static String jPhoto = "photos";
     static String jPhotoReference = "photo_reference";
     static String jAddress = "vicinity";
+
+    /* JSON tags for place details call */
+    static String jFormattedAddress = "formatted_address";
+    static String jFormattedPhoneNumber = "formatted_phone_number";
+    static String jPhotos = "photos";
+    static String jResult = "result";
+
+    /* Call types */
+    static String LIST = "nearbysearch";
+    static String DETAILS = "details";
 
     static void setRequestQueue(RequestQueue r) {
         requestQueue = r;
@@ -77,10 +89,10 @@ public class API {
         return url;
     }
 
-    public static void call (final Map<String, String> headers, JSONObject body, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener, int method) {
+    public static void call ( String type, final Map<String, String> headers, JSONObject body, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener, int method) {
         JsonObjectRequest request;
 
-        String url = cdn;
+        String url = cdn + type + "/json";
         if (headers != null) {
             String query = "?";
             Iterator it = headers.entrySet().iterator();

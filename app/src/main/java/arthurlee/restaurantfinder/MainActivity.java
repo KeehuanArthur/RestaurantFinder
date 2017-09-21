@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
     PagerAdapter mPagerAdapter;
     MapFinderFragment map_fragment;
     PlaceListFragment list_fragment;
+    HashMap<LatLng, String> markerMap;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
     public Location mCurrentLocation;
@@ -79,6 +80,9 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
         API.setRequestQueue(Volley.newRequestQueue(this));
         API.initImageLoader();
 
+        markerMap = new HashMap<>();
+
+        /* keep using the same 2 fragments */
         map_fragment = MapFinderFragment.newInstance("test 1");
         list_fragment = new PlaceListFragment();
 
@@ -184,6 +188,13 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        API.setRequestQueue(Volley.newRequestQueue(this));
+        API.initImageLoader();
+    }
+
     public void try_api(Double latitude, Double longitude, Double radius) {
         Log.d(TAG, "----------- trying api ------------");
         Response.Listener test_listener = new Response.Listener<JSONObject>() {
@@ -206,6 +217,9 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
                     //TODO: add some kind of listener to stop the for loop. just so if multiple responses are received
                     //      it can stop. Multiple responses can happen when the user keeps moving around the map.
                     JSONArray jsonPlaceArray = response.getJSONArray(API.jResults);
+                    if (jsonPlaceArray.length() == 0) {
+                        Toast.makeText(MainActivity.this, "No Restaurants in Location", Toast.LENGTH_SHORT).show();
+                    }
                     for (int i = 0; i < jsonPlaceArray.length(); i++ ){
                         JSONObject jsonPlace = jsonPlaceArray.getJSONObject(i);
                         final PlaceContent.PlaceItem placeItem = new PlaceContent.PlaceItem();
@@ -237,9 +251,16 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
                             public void run() {
                                 PlaceContent.addItem(placeItem);
                                 list_fragment.mRecyclerView.getAdapter().notifyItemInserted(PlaceContent.ITEMS.size()-1);
-                                map_fragment.mGoogleMap.addMarker(new MarkerOptions()
-                                                                    .position(new LatLng(placeItem.latitude, placeItem.longitude))
-                                                                    .title(placeItem.title));
+                                String id = markerMap.get(new LatLng(placeItem.latitude, placeItem.longitude));
+
+                                // only add new markers into map
+                                if (id == null) {
+                                    map_fragment.mGoogleMap.addMarker(new MarkerOptions()
+                                            .position(new LatLng(placeItem.latitude, placeItem.longitude))
+                                            .title(placeItem.title));
+                                    markerMap.put(new LatLng(placeItem.latitude, placeItem.longitude), placeItem.id);
+                                }
+
                             }
                         });
 
@@ -258,13 +279,10 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
         };
         final Map<String, String> headers = new HashMap<>();
         headers.put("key", API.places_key);
-//        headers.put("location", Double.toString(l.getLatitude()) + "," + Double.toString(l.getLongitude()) );
         headers.put("location", String.format(Locale.US, "%.4f, %4f", latitude, longitude));
-//        headers.put("location", "37.553452, -121.980302");
-//        headers.put("radius", "500");
         headers.put("radius", String.format(Locale.US, "%4f", radius));
         headers.put("type", "restaurant");
-        API.call(headers, null, test_listener, test_error_listener, Request.Method.GET);
+        API.call(API.LIST, headers, null, test_listener, test_error_listener, Request.Method.GET);
     }
 
     public void openDetailsActivity(String title, String location, float rating, String placeId){
