@@ -15,4 +15,4 @@ The ImageView in the detailed view of a single restaurant is also a ViewPager. I
 
 
 ## Testing
-This app was tested on a Samsung Galaxy S6 running Android 7.0. The min SDK version is 21 (5.0 Lolipop)
+This app was tested on a Samsung Galaxy S6 running Android 7.0. The min SDK version is 21 (5.0 Lolipop). This app was built using Android Studio 2.3.3 with JRE 1.8.0
